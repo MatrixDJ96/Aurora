@@ -130,6 +130,14 @@ namespace Aurora.Utils
 
                 float value = sensor?.Value ?? 0;
 
+                if ((value == 0 || value < 20 || value > 100 || string.IsNullOrWhiteSpace(value.ToString())) && (sensor?.SensorType ?? (SensorType)2) == SensorType.Temperature)
+                {
+                    if (Global.Configuration.HardwareMonitorCPUTemperatureLog)
+                        File.AppendAllText(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\Aurora.log", DateTime.Now.ToString() + " - " + (sensor?.Identifier.ToString() ?? "Unknown") + ": " + value + "�C" + Environment.NewLine);
+
+                    value = 0;
+                }
+
                 if (!_queues.TryGetValue(sensor.Identifier, out var values))
                     return value;
 
