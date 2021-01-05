@@ -44,6 +44,9 @@ namespace Aurora.Devices.PCSPECIALIST
                 if (variableRegistry == null)
                 {
                     variableRegistry = new VariableRegistry();
+
+                    variableRegistry.Register($"{DeviceName}_enable_shutdown_color", false, "Enable shutdown color");
+                    variableRegistry.Register($"{DeviceName}_shutdown_color", new RealColor(Color.FromArgb(255, 255, 255, 255)), "Shutdown color");
                 }
 
                 return variableRegistry;
@@ -81,6 +84,17 @@ namespace Aurora.Devices.PCSPECIALIST
         {
             if (IsInitialized)
             {
+                if (Global.Configuration.VarRegistry.GetVariable<bool>($"{DeviceName}_enable_shutdown_color"))
+                {
+                    Color color = Global.Configuration.VarRegistry.GetVariable<RealColor>($"{DeviceName}_shutdown_color").GetDrawingColor();
+
+                    foreach (var dev in connectedDevices )
+                    {
+                        // Apply shutdown color
+                        dev.SetColor(color.R, color.G, color.B);
+                    }
+                }
+
                 foreach (var dev in connectedDevices)
                 {
                     // Disconnect devices
