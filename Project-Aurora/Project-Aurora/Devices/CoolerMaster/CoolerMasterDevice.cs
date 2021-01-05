@@ -47,6 +47,8 @@ namespace Aurora.Devices.CoolerMaster
                     variableRegistry = new VariableRegistry();
                     variableRegistry.Register($"{DeviceName}_enable_sdk", true, "Enable CoolerMaster SDK");
                     variableRegistry.Register($"{DeviceName}_enable_hidlibrary", false, "Enable Hid library");
+                    variableRegistry.Register($"{DeviceName}_enable_shutdown_color", false, "Enable shutdown color");
+                    variableRegistry.Register($"{DeviceName}_shutdown_color", new RealColor(Color.FromArgb(255, 255, 255, 255)), "Shutdown color");
                 }
 
                 return variableRegistry;
@@ -102,6 +104,31 @@ namespace Aurora.Devices.CoolerMaster
         {
             if (!IsInitialized)
                 return;
+
+            if (Global.Configuration.VarRegistry.GetVariable<bool>($"{DeviceName}_enable_shutdown_color"))
+            {
+                Color color = Global.Configuration.VarRegistry.GetVariable<RealColor>($"{DeviceName}_shutdown_color").GetDrawingColor();
+
+                // Need testing
+                foreach (var (dev, colors) in SDKDevices)
+                {
+                    for (int column = 0; column < SDK.Native.MAX_LED_COLUMN; column++)
+                    {
+                        for (int row = 0; row < SDK.Native.MAX_LED_ROW; row++)
+                        {
+                            colors.KeyColor[column, row] = new SDK.Native.KEY_COLOR(color);
+                        }
+                    }
+
+                    SDK.Native.SetAllLedColor(colors, dev);
+                }
+
+                foreach (var dev in HidLibraryDevices)
+                {
+                    // Apply shutdown color
+                    dev.SetColor(color.R, color.G, color.B);
+                }
+            }
 
             foreach (var (dev, _) in SDKDevices)
                 SDK.Native.EnableLedControl(false, dev);
