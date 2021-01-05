@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DK = Aurora.Devices.DeviceKeys;
 
-namespace Aurora.Devices.CoolerMaster
+namespace Aurora.Devices.CoolerMaster.SDK
 {
     public static class KeyMaps
     {

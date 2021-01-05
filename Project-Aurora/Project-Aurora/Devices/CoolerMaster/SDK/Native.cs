@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aurora.Devices.CoolerMaster
+namespace Aurora.Devices.CoolerMaster.SDK
 {
     public static class Native
     {
